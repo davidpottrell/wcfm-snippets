@@ -1,0 +1,11 @@
+//By default, vendors can view a list of their customers under the "Customer" tab of their dashboard.
+//If a vendor purchases from another vendor, they do not appear under this list.
+//This code makes sure that other vendors and administrators are shown as "Customers" if they make a purchase.
+
+add_filter( 'wcfm_customer_user_role', function( $customer_user_roles ) {
+  $customer_user_roles[] = 'wcfm_vendor';
+  $customer_user_roles[] = 'shop_manager';
+  $customer_user_roles[] = 'administrator';
+return $customer_user_roles;
+});
+
