@@ -1,0 +1,2 @@
+//Disabled the default express API and allows you to use Standard
+add_filter( 'wcfm_is_allow_stripe_express_api', '__return_false' );
