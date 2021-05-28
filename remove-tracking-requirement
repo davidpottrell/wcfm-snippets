@@ -1,0 +1,12 @@
+//By default, WCFM requires tracking information before a vendor can mark the order "Complete" however some shipping methods
+//do not provide tracking. This snippiet removes the requirement.
+add_filter( 'wcfm_shipment_tracking_fields', function( $tracking_fields ) {
+	if( isset( $tracking_fields['wcfm_tracking_code'] ) && isset( $tracking_fields['wcfm_tracking_code']['custom_attributes'] ) ) {
+		unset( $tracking_fields['wcfm_tracking_code']['custom_attributes'] );
+	}
+	if( isset( $tracking_fields['wcfm_tracking_url'] ) && isset( $tracking_fields['wcfm_tracking_url']['custom_attributes'] ) ) {
+		unset( $tracking_fields['wcfm_tracking_url']['custom_attributes'] );
+	}
+	return $tracking_fields;
+});
+
