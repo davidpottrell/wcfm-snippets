@@ -1,0 +1,18 @@
+//Generate a count of all registered vendors
+function wcfm_vendor_count_shortcode( $attr ) {
+	$status = 'active';
+	$result = count_users();
+	$avail_roles = array_merge( array( 'wcfm_vendor' => 0, 'disable_vendor' => 0 ), $result['avail_roles'] );
+
+	if ( isset( $attr['status'] ) && in_array( $attr['status'], array('all', 'active', 'inactive') ) )
+		$status = $attr['status'];
+
+	if($status === 'inactive')
+		return absint( $avail_roles['disable_vendor'] );
+	if($status === 'all')
+		return absint( $avail_roles['wcfm_vendor'] ) + absint( $avail_roles['disable_vendor'] );
+
+	return absint( $avail_roles['wcfm_vendor'] );
+}
+
+add_shortcode( 'wcfm_vendor_count', 'wcfm_vendor_count_shortcode' );
