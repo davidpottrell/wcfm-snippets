@@ -10,4 +10,5 @@
 <li>Last product overwrite limit<br>
   Get past the last product limit bug</li>
   <li>Vendor as a customer</li>
+    <li>Retrieve a count of all vendors</li>
 </ul>
