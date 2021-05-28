@@ -1,0 +1,77 @@
+// BUG - Reported on 02/03/2021
+// Full credit goes to Ben Hussenet for this temporary fix
+//
+// When you specify a product limit, for example, 15, and a vendor has 14 products with a 15th set as draft, they are unable to publish this product.
+// The actual fix involves changing the `wcfm_get_user_posts_count` to count products that are status `publish` instead of `any`.
+// Some additional modifications had to be made to the function to make it work outside of the class.
+
+remove_filter( 'wcfm_is_allow_product_limit', 'wcfmcap_is_allow_product_limit', 501 );
+add_filter( 'wcfm_is_allow_product_limit', 'custom_wcfmcap_is_allow_product_limit', 600 );
+
+// WCFM wcfmcap Add Products by Product Limit
+function custom_wcfmcap_is_allow_product_limit( $allow ) {
+
+	$customWCFMOptions = apply_filters( 'wcfm_capability_options_rules', get_option( 'wcfm_capability_options', array() ) );
+
+	$manage_products = ( isset( $customWCFMOptions['submit_products'] ) ) ? $customWCFMOptions['submit_products'] : 'no';
+	$manage_products = ( isset( $customWCFMOptions['manage_products'] ) ) ? $customWCFMOptions['manage_products'] : $manage_products;
+	if( $manage_products == 'yes' ) return false;
+	$add_products = ( isset( $customWCFMOptions['add_products'] ) ) ? $customWCFMOptions['add_products'] : 'no';
+	if( $add_products == 'yes' ) return false;
+
+	// Limit Restriction
+	$current_user_id = apply_filters( 'wcfm_current_vendor_id', get_current_user_id() );
+	$productlimit = ( isset( $customWCFMOptions['productlimit'] ) ) ? $customWCFMOptions['productlimit'] : '';
+	if( ( $productlimit == -1 ) || ( $productlimit == '-1' ) ) $productlimit = -1;
+	elseif( $productlimit ) $productlimit = absint($productlimit);
+	$productlimit = apply_filters( 'wcfm_vendor_verification_product_limit', $productlimit, $current_user_id );
+	$productlimit = apply_filters( 'wcfm_vendor_product_limit', $productlimit, $current_user_id );
+	if( ( $productlimit == -1 ) || ( $productlimit == '-1' ) ) {
+		return false;
+	} else {
+		if( $productlimit ) $productlimit = absint($productlimit);
+		if( $productlimit && ( $productlimit >= 0 ) ) {
+			if( $productlimit == 1989 ) return false;
+			$count_products  = wcfm_get_user_posts_count( $current_user_id, 'product', apply_filters( 'wcfm_limit_check_status', 'publish' ), array( 'suppress_filters' => 1 ) );
+			if( $productlimit <= $count_products ) return false;
+		}
+	}
+	return true;
+}
+
+remove_filter( 'wcfm_products_limit_label', 'wcfmcap_products_limit_label', 61 );
+add_filter( 'wcfm_products_limit_label', 'custom_wcfmcap_products_limit_label', 62 );
+
+// WCFM Product Limit Label
+function custom_wcfmcap_products_limit_label( $label ) {
+
+	$customWCFMOptions = apply_filters( 'wcfm_capability_options_rules', get_option( 'wcfm_capability_options', array() ) );
+
+	if( current_user_can( 'administrator' ) || !apply_filters( 'wcfm_is_allow_limit_label', true ) || !apply_filters( 'wcfm_is_allow_product_limit_label', true ) ) return'';
+
+	$current_user_id = apply_filters( 'wcfm_current_vendor_id', get_current_user_id() );
+	$label = __( 'Products Limit: ', 'wc-frontend-manager' );
+
+	$productlimit = ( isset( $customWCFMOptions['productlimit'] ) ) ? $customWCFMOptions['productlimit'] : '';
+	if( ( $productlimit == -1 ) || ( $productlimit == '-1' ) ) $productlimit = 1;
+	elseif( $productlimit ) $productlimit = absint($productlimit);
+	$productlimit = apply_filters( 'wcfm_vendor_verification_product_limit', $productlimit, $current_user_id );
+	$productlimit = apply_filters( 'wcfm_vendor_product_limit', $productlimit, $current_user_id );
+	if( ( $productlimit == -1 ) || ( $productlimit == '-1' ) ) {
+		$label .= ' 0 ' . __( 'remaining', 'wc-frontend-manager' );
+	} else {
+		if( $productlimit ) $productlimit = absint($productlimit);
+		if( $productlimit && ( $productlimit >= 0 ) ) {
+			if( $productlimit == 1989 ) {
+				$label .= ' 0 ' . __( 'remaining', 'wc-frontend-manager' );
+			} else {
+				$count_products  = wcfm_get_user_posts_count( $current_user_id, 'product', apply_filters( 'wcfm_limit_check_status', 'publish' ), array( 'suppress_filters' => 1 ) );
+				$label .= ' ' . ( $productlimit - $count_products ) . ' ' . __( 'remaining', 'wc-frontend-manager' );
+			}
+		} else {
+			$label .= __( 'Unlimited', 'wc-frontend-manager' );
+		}
+	}
+	$label = '<span class="wcfm_products_limit_label">' . $label . '</span>';
+	return $label;
+}
