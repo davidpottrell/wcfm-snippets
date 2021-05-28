@@ -1,0 +1,5 @@
+//Remove Google Plus from social media form
+add_filter( 'wcfm_profile_fields_social', function( $social_fields ) {
+	$social_fields = wcfm_hide_field( 'google_plus', $social_fields );
+	return $social_fields;
+}, 50 );
