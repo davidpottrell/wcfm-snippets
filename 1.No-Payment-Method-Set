@@ -1,0 +1,13 @@
+//Retrieves the payment method and compares it to a string (eg. Stripe / Paypal)
+add_action( 'wcfm_after_dashboard_welcome_box', function() {
+	global $WCFM, $WCFMmp, $wpdb;
+	if( !$vendor_id ) {
+		$vendor_id = $WCFMmp->vendor_id;
+	}
+	if( wcfm_is_vendor() ) {
+	$payment_method = $WCFMmp->wcfmmp_vendor->get_vendor_payment_method( $vendor_id );
+		if (!$payment_method == "stripe") {
+    //Your Notice here
+		}
+	}
+});
