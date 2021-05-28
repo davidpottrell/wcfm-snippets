@@ -1,0 +1,14 @@
+//Allow ' in store names
+add_filter( 'wcfm_membership_registration_fields', function( $store_name_fields ) {
+	if( isset( $store_name_fields['store_name'] ) ) {
+	  $store_name_fields['store_name']['class'] = 'wcfm-text wcfm_ele';
+	}
+	return $store_name_fields;
+});
+
+add_filter( 'wcfm_marketplace_settings_fields_general', function( $store_name_fields ) {
+	if( isset( $store_name_fields['store_name'] ) ) {
+		$store_name_fields['store_name']['class'] = 'wcfm-text wcfm_ele';
+	}
+	return $store_name_fields;
+});
