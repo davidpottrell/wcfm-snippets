@@ -1,0 +1,57 @@
+// Contributed by Bastian Orth
+// With this checks you can prevent vendors to add a product if they didn't finish the important store setup steps
+
+
+
+// check payment settings
+add_filter( 'wcfm_is_allow_pm_add_products', function( $is_allow ) {
+	global $wp, $WCFM;
+	if( wcfm_is_vendor() ) {
+		$vendor_id = apply_filters( 'wcfm_current_vendor_id', get_current_user_id() );
+		$vendor_data = get_user_meta( $vendor_id, 'wcfmmp_profile_settings', true );
+		$payment_mode = isset( $vendor_data['payment']['method'] ) ? esc_attr( $vendor_data['payment']['method'] ) : '' ;
+		$paypal_email = isset( $vendor_data['payment']['paypal']['email'] ) ? esc_attr( $vendor_data['payment']['paypal']['email'] ) : '' ;
+		$stripe_user_id = get_user_meta( $vendor_id, 'stripe_user_id', true );
+		if( !$payment_mode || ( ( $payment_mode == 'stripe' ) && !$stripe_user_id ) || ( ( $payment_mode == 'paypal' ) && !$paypal_email ) ) {
+			if( isset( $wp->query_vars['wcfm-products-manage'] ) ) {
+				wcfm_restriction_message_show( __( "YOUR MESSAGE HERE", "wc-fronend-manager" ), false, true );
+				}
+			$is_allow = false;
+			}
+	}
+
+
+//check if the vendor policies are filled with some characters	
+	if( wcfm_is_vendor() ) {
+		$vendor_id = apply_filters( 'wcfm_current_vendor_id', get_current_user_id() );
+		$wcfm_policy_vendor_options = (array) wcfm_get_user_meta( $vendor_id, 'wcfm_policy_vendor_options', true );
+		$_wcfm_vendor_shipping_policy = !empty(wp_strip_all_tags($wcfm_policy_vendor_options['shipping_policy'] )) ? $wcfm_policy_vendor_options['shipping_policy'] : '';
+		$_wcfm_vendor_refund_policy = !empty(wp_strip_all_tags($wcfm_policy_vendor_options['refund_policy'] )) ? $wcfm_policy_vendor_options['refund_policy'] : '';
+		$_wcfm_vendor_cancellation_policy = !empty(wp_strip_all_tags($wcfm_policy_vendor_options['cancellation_policy'] )) ? $wcfm_policy_vendor_options['cancellation_policy'] : '';
+		if( !$_wcfm_vendor_shipping_policy || !$_wcfm_vendor_refund_policy || !$_wcfm_vendor_cancellation_policy ) {
+			if( isset( $wp->query_vars['wcfm-products-manage'] ) ) {
+				wcfm_restriction_message_show( __( "YOUR MESSAGE HERE" ), false, true );
+			}
+			$is_allow = false;
+		}
+	}
+
+
+//check if vendor shipping settings	
+	if( $is_allow && function_exists( 'wcfm_is_vendor' ) && wcfm_is_vendor() ) {
+		$vendor_id = apply_filters( 'wcfm_current_vendor_id', get_current_user_id() );
+		$wcfmmp_shipping = get_user_meta( $vendor_id, '_wcfmmp_shipping', true );
+		$shipping_type = isset($wcfmmp_shipping['_wcfmmp_user_shipping_type'])? $wcfmmp_shipping['_wcfmmp_user_shipping_type'] : '';
+		$wcfmmp_shipping_by_country = get_user_meta( $vendor_id, '_wcfmmp_shipping_by_country', true );
+		$wcfmmp_country_weight_rates = get_user_meta( $vendor_id, '_wcfmmp_country_weight_rates', true );
+		$vendor_all_shipping_zones = wcfmmp_get_shipping_zone( '', $vendor_id );
+		if( !$wcfmmp_shipping || ( $wcfmmp_shipping && empty( $shipping_type ) ) || ( $wcfmmp_shipping && $shipping_type && ( $shipping_type == 'by_country' ) && empty( $wcfmmp_shipping_by_country ) ) || ( $wcfmmp_shipping && $shipping_type && ( $shipping_type == 'by_weight' ) && empty( $wcfmmp_country_weight_rates ) ) || ( $wcfmmp_shipping && $shipping_type && ( $shipping_type == 'by_zone' ) && empty( $vendor_all_shipping_zones ) ) ) {
+			$is_allow = false;
+			if( isset( $wp->query_vars['wcfm-products-manage'] ) ) {
+				wcfm_restriction_message_show( __( "YOUR MESSAGE HERE", "wc-fronend-manager" ), false, true );
+			}
+		}
+	}
+	
+	return $is_allow;
+}, 750 );
