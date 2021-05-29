@@ -1,0 +1,3 @@
+//As WCFM send per default a lot of emails you can reduce the spam with this snippet
+add_filter( 'wcfm_is_allow_itemwise_notification', '__return_false' );
+add_filter( 'wcfm_is_show_marketplace_itemwise_orders', '__return_false' );
