@@ -1,0 +1,13 @@
+// Hide unnecessary fields of the shipping by country
+
+add_filter('wcfmmp_settings_fields_shipping_by_country','remove_some_shipping_settings');
+function remove_some_shipping_settings($fields) {
+	unset($fields['wcfmmp_shipping_type_price']);
+	unset($fields['wcfmmp_additional_product']);
+	unset($fields['wcfmmp_additional_qty']);
+	unset($fields['wcfmmp_byc_local_pickup_cost']);
+	unset($fields['wcfmmp_country_to']);
+	unset($fields['wcfmmp_country_to_price']);
+	unset($fields['wcfmmp_shipping_state_rates']);
+	return $fields;	
+}
