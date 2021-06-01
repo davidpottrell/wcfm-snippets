@@ -1,15 +1,10 @@
 # wcfm-snippets
 
-<h2>Coming soon</h2>
+<h2>WCFM Code Snippets</h2>
 
-<ul>
-<li>No Payment Method Set<br>
-Display a warning to the vendor on their dashboard if they don't have a payment method assigned.</li>
-<li>Enable Standard Stripe API<br>
-Sometimes you may not wish to use Stripe Express, this code allows you to use Standard</li>
-<li>Last product overwrite limit<br>
-Get past the last product limit bug</li>
-<li>Vendor as a customer</li>
-<li>Retrieve a count of all vendors</li>
-<li>Allow apostrophies  in vendor store names</li>
-</ul>
+<p>These snippets can be pasted into your functions.php file or create a dedicated plugin to house the snippets for easy bug fixing.</p>
+<p>For descriptions on what the snippets do/further reading, please click into the file of interest</p>
+<p>WCFM provided snippets can be found here: <a href="https://docs.wclovers.com/tweaks/" target="_blank">https://docs.wclovers.com/tweaks/</a>.
+
+<h4>Marketplaces built with WCFM + These snippets</h4>
+<a href="http://craftersmarket.uk/" target="_blank">Crafter's Market UK</a>
