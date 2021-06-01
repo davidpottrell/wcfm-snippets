@@ -1,0 +1,9 @@
+// hide not necessary fields for the shipping details of the product. This could be useful for a marketplace with almost private vendors
+add_filter('wcfm_product_manage_fields_shipping','remove_some_shipping_fields',15,2);
+function remove_some_shipping_fields($fields,$product_id){
+	unset($fields['length']);
+	unset($fields['width']);
+	unset($fields['height']);
+	unset($fields['shipping_class']);//remove shipping class field
+	return $fields;
+}
