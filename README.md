@@ -7,4 +7,8 @@
 <p>WCFM provided snippets can be found here: <a href="https://docs.wclovers.com/tweaks/" target="_blank">https://docs.wclovers.com/tweaks/</a>.
 
 <h4>Marketplaces built with WCFM + These snippets</h4>
-<a href="http://craftersmarket.uk/" target="_blank">Crafter's Market UK</a>
+<ul>
+  <li><a href="https://craftersmarket.uk/" target="_blank">Crafter's Market UK</a></li>
+<li><a href="https://splander.net/" target="_blank">Splander</a></li>
+<li><a href="https://www.troopas.co.uk/" target="_blank">Troopas</a></li>
+  </ul>
