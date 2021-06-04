@@ -1,0 +1,8 @@
+//Add custom meta data to the header, for example, Pinterest claim metatag or Facebook verification.
+
+add_action('wp_head',function() {
+  if(wcfm_is_store_page()) {
+     echo '<meta name="facebook-domain-verification" content="" />';
+    }
+  }
+);
