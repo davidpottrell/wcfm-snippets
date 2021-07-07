@@ -1,0 +1,14 @@
+//When you're using the affiliates add-on and you allow vendors to become affiliates, they'll no longer be able to view draft products.
+//This is due to a permission the affiliate role does not have that the vendor needs.
+//Add this to functions.php
+//WCFM notified 07/07/21 and will update 'soon'.
+
+add_action(\'wp_login\', function($user_login, $user) {
+if( in_array(\'wcfm_affiliate\', $user->roles) && in_array(\'wcfm_vendor\', $user->roles) ) {
+if(!get_user_meta($user->ID, \'_wcfm_affiliate_vendor_caps_reset\', true)) {
+$user->remove_role(\'wcfm_vendor\');
+$user->add_role(\'wcfm_vendor\');
+update_user_meta($user->ID, \'_wcfm_affiliate_vendor_caps_reset\', true);
+}
+}
+}, 10, 2);
