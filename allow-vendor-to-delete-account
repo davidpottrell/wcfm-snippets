@@ -1,0 +1,37 @@
+//For this snippet we are going to utilise the WP Delete User Accounts plugin found here: https://wordpress.org/plugins/wp-delete-user-accounts/
+//Insert the following code into your functions.php or custom plugin and customise where needed.
+
+
+//Load the delete plugin into the wcfm endpoint
+add_filter( 'wp_delete_user_accounts_load_assets_on_frontend', 'wp_delete_user_accounts_load_assets_on_woocommerce_edit_account' );
+function wp_delete_user_accounts_load_assets_on_woocommerce_edit_account( $load ) {
+	return wcfm_get_endpoint_url('wcfm-settings' ) ? true : $load;
+}
+
+//Create the new tab and insert the plugin shortcode.
+add_action( 'end_wcfm_vendor_settings', function( $vendor_id ) {
+           
+	<!-- collapsible -->
+	<div class="page_collapsible" id="wcfm_settings_form_additional_head">
+		<label class="wcfmfa wcicon-globe"></label>
+		<?php _e('Delete Account', 'wc-multivendor-marketplace'); ?><span></span>
+	</div>
+	<div class="wcfm-container">
+		<div id="wcfm_settings_form_additional_expander" class="wcfm-content">
+			<h2><?php _e('Delete Account', 'wc-multivendor-marketplace'); ?></h2>
+
+			<div class="wcfm_clearfix"></div>
+
+			<p>
+				We hate goodbyes, but let's not make this difficult, if you'd like to remove your account you can do so using the button below. 
+        Please note, this action is irriversible and will remove products, media, settings - everything.
+			</p>
+			<div>
+          <!--WP DELETE USER ACCOUNTS PLUGIN SHORTCODE-->
+					<?php echo do_shortcode('[wp_delete_user_accounts]');?>
+			</div>
+		</div>
+	</div>
+	<!-- end collapsible -->
+	<?php
+}, 60, 1 );
