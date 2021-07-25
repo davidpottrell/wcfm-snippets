@@ -1,0 +1,8 @@
+//None of my vendors use this so I thought I'd hide it. It's the shipping method description field.
+
+add_filter( 'wcfmmp_shipping_zone_description_fields', function( $description_fields ) {
+	$description_fields = wcfm_hide_field( 'method_description_fs', $description_fields );
+	$description_fields = wcfm_hide_field( 'method_description_lp', $description_fields );
+	$description_fields = wcfm_hide_field( 'method_description_fr', $description_fields );
+	return $description_fields;
+});
