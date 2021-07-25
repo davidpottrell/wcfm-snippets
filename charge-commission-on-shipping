@@ -1,0 +1,3 @@
+//You may wish to include shipping costs in the commission fee you take - place the following code in your custom plugin/functions.php
+
+add_filter( 'wcfmmp_is_allow_commission_on_shipping', '__return_true' );
