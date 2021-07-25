@@ -1,0 +1,3 @@
+//Sometimes you may wish you hide tax options. Using this snippiet you can hide the shipping tax field under Shipping Methods for the vendor - clean UI!
+
+add_filter( 'show_shipping_zone_tax', '__return_false' );
