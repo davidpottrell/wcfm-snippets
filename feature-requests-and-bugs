@@ -1,0 +1,12 @@
+BUGS
+
+WEBP Support for WCFM Frontend 
+ - Currently many plugins on the market will insert <picture> - this breaks WCFM.
+ 
+Analytics
+ - Stats track every view (even refreshes). WCFM have plans to revamp the Analytics.
+ 
+Product limit cap
+ - When you set a product limit, eg. 15, and the vendor has 14 products and 1 set as draft (15 total). They are unable to submit the last 15th product.
+ - Temp fix: https://github.com/davidpottrell/wcfm-snippets/blob/main/last-product-limit-overwrite
+ 
