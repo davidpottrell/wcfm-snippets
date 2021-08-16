@@ -1,0 +1,11 @@
+//Potentially a bug but the affiliates role can access the store-manager page and view raw analytics from the marketplace. Big nono. This code ensures the role cannot view this.
+
+//Hide analytics from affiliates
+function hide_dashboard_stats_from_affiliate_user( $allow ) {
+    if( function_exists( 'wcfm_is_affiliate' ) ) {
+        $allow = !wcfm_is_affiliate();
+    }
+    return $allow;
+}
+add_filter( 'wcfm_is_allow_analytics', 'hide_dashboard_stats_from_affiliate_user' );
+add_filter( 'wcfm_is_allow_dashboard_product_stats', 'hide_dashboard_stats_from_affiliate_user' );
