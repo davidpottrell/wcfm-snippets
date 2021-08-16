@@ -1,0 +1,13 @@
+//Ensure vendors can only upload certain files
+
+function wpse_restrict_mimes($mime_types){
+    $mime_types = array(
+        'jpg|jpeg' => 'image/jpeg',
+		'png' => 'image/png',
+		'gif' => 'image/gif',
+		'pdf' => 'application/pdf'
+    );
+    return $mime_types;
+}
+
+add_filter('upload_mimes', 'wpse_restrict_mimes');
