@@ -1,0 +1,5 @@
+//Set default user avatar in WCFM Store Manager dashboard
+add_filter('wcfm_defaut_user_avatar',function($img_url){
+	$img_url = 'path-to-profile-image/file-name.png'; //Add your image here
+	return $img_url;
+},20);
