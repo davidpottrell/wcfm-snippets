@@ -1,0 +1,68 @@
+//It's never good to list products from vendors who aren't active. There's a risk a customer could purchase an item
+//from a vendor who has long since left or forgotten about your marketplace.
+//With this group of functions you can schedule vendor accounts to be emailed or products switched to draft (feature is in the works).
+
+//Copy from this notice onward
+
+/////////////////////////////////////////////////////////////////////////
+
+//Log when the user signed in last via wp_login
+function user_last_login( $user_login, $user ) { 
+    update_user_meta( $user->ID, 'last_login', time());
+}
+add_action('wp_login', 'user_last_login', 10, 2);
+
+
+//Create a custom cron schedule
+function myprefix_custom_cron_schedule( $schedules ) {
+    $schedules['every_six_hours'] = array(
+        'interval' => 21600, // Every 6 hours
+        'display'  => __( 'Every 6 hours' ),
+    );
+    return $schedules;
+}
+add_filter( 'cron_schedules', 'myprefix_custom_cron_schedule' );
+
+
+//Schedule an action if it's not already scheduled
+if ( ! wp_next_scheduled( 'product_status' ) ) {
+    wp_schedule_event( time(), 'every_six_hours', 'product_status' );
+}
+
+
+///Hook into that action that'll fire every six hours
+ add_action( 'product_status', 'product_status_function' );
+
+
+//Loop through all users and check the last time they signed in compared to today's date, minus 3 months.
+//If more than 3 months, insert some custom data to flag this user as potentially inactive
+//We can now do anything whilst checking this. Eg. Schedule an email, switch their products to draft etc.
+function product_status_function() {
+	$all_vendors = get_users( array( 'role__in' => array( 'wcfm_vendor') ) );
+	foreach ( $all_vendors as $user ) {
+		$last_login = get_the_author_meta( 'last_login', $user->ID );
+		$now = time();
+		if($last_login < strtotime('-3 months', $now)) {
+			update_user_meta( $user->ID, 'pending_draft', 'yes' );
+		} else {
+			update_user_meta( $user->ID, 'pending_draft', 'no' );
+		}
+	}
+}
+
+
+//Using our custom data we can show the last time vendor signed in to them.
+function lastlogin() {
+	$last_login = '';
+	$last_login = get_the_author_meta('last_login', get_current_user_id() );
+	if($last_login):
+	$the_login_date = human_time_diff($last_login);
+	else:
+	$the_login_date = '[No Record]';
+	endif;
+	return $the_login_date; 
+}
+ 
+ 
+//Create shortcode to show when they last logged in
+add_shortcode('lastlogin','lastlogin');
