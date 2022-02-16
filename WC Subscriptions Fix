@@ -15,7 +15,7 @@ function my_cancelled_subscription( $subscription ) {
 		if(get_user_meta($user_id, 'wcfm_membership_subscription',true) == $subscription_id) {
 			delete_user_meta( $user_id, 'wcfm_membership_application_status' );
 			delete_user_meta( $user_id, 'wcfm_membership_subscription' );
-			delete_user_meta( $member_id, 'wcfm_membership_order' );
+			delete_user_meta( $user_id, 'wcfm_membership_order' );
 		}
 	}
 }
