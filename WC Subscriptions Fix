@@ -1,37 +1,23 @@
-The WC Subscriptions plugin by default doesn't currently cancel WCFM membership when a subscription is cancelled via My Account > My Subscriptions. The below code fixes this.
+The WCFM Membership plugin allows vendors to register and cancel their membership. 
+If you use the WC Subscriptions plugin it doesn't currently cancel WCFM membership when a subscription is cancelled via My "Account > My Subscriptions". 
+The below code will ensure that when the subscription is cancelled, the membership data is removed (and they revert to Free membership).
 
-This snippiet is incomplete for now. The next step is to use the code further down to cancel WC Subscriptions if the vendor cancels via the WCFM membership page.
+By default cancelling membership via Store Manager > Membership will Expire the WC Subscription so we don't need to worry about this.
+
 
 /////////////////////////////////////////
+
 
 function my_cancelled_subscription( $subscription ) {
 	$subscription_id = $subscription->get_id();
 	$user_id = get_current_user_id();
 	if((get_user_meta($user_id, 'wcfm_membership_subscription',true) != '') && (get_user_meta($user_id,'wcfm_membership',true)!='')) {
 		if(get_user_meta($user_id, 'wcfm_membership_subscription',true) == $subscription_id) {
-			update_user_meta( $user_id, 'wcfm_subscription_status', 'cancelled' );
 			delete_user_meta( $user_id, 'wcfm_membership_application_status' );
 			delete_user_meta( $user_id, 'wcfm_membership_subscription' );
-			delete_user_meta( $user_id, 'wcfm_membership' );
-      // The below line will bypass WC Subscriptions "Pending" status.
-			$subscription->update_status( 'cancelled', 'Subscription cancelled' );
+			delete_user_meta( $member_id, 'wcfm_membership_order' );
 		}
 	}
 }
 add_action( 'woocommerce_customer_changed_subscription_to_cancelled', 'my_cancelled_subscription', 15 );
 
-/////////////////////////////////////////
-
-Line 2965 of class-wcfmvm.php within the marketplace plugin ref #wcfmvm_membership_update_on_subscription_status_changed
-
-if( apply_filters( 'wcfm_membership_cancel_on_subscription_cancel', true ) ) {
-
-  if( in_array( $status_to, $membership_cancel_subscription_status ) ) {
-
-    $this->wcfmvm_vendor_membership_cancel( $member_id, $wcfm_membership );
-
-    $this->store_subscription_data( $member_id, $paymode, '', $paymode.'_subscription_cancel', 'Cancelled', __(  'WC Subscription Cancellation', 'wc-multivendor-membership' ) );
-
-  }
-
-}
