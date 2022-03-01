@@ -1,0 +1,7 @@
+//Product title length validation
+add_filter( 'wcfm_product_manage_fields_general', function( $general_fields, $product_id, $product_type ) {
+	if( isset( $general_fields['pro_title'] ) ) {
+		$general_fields['pro_title']['attributes'] = array( 'maxlength' => 100 );
+	}
+	return $general_fields;
+}, 50, 3 );
