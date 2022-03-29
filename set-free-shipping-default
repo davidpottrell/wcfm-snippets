@@ -1,0 +1,24 @@
+/*
+We get a lot of vendors confused with how to set up their shipping rates. 
+When allowing vendors to choose a method (By Zone, Weight or Distance), the UI is initially confusing.
+Using the below function, we tie into the new store created hook.
+When a vendor signs up, we enable their shipping for them, along with setting "by_zone" and then add the method "Free Shipping"
+This means the vendor can add their products without having to worry about shipping
+
+Copy this function into your own plugin or functions.php file
+*/
+
+add_action( 'wcfmmp_new_store_created', function( $member_id, $wcfmmp_settings ) {
+	global $wpdb;
+	$wcfmmp_shipping = array ( '_wcfmmp_user_shipping_enable' => 'yes', '_wcfmmp_user_shipping_type' => 'by_zone' );
+	update_user_meta( $member_id, '_wcfmmp_shipping', $wcfmmp_shipping );	
+
+
+	$wpdb->insert('market_wcfm_marketplace_shipping_zone_methods', array(
+		'zone_id' => 1,
+		'method_id' => 'free_shipping',
+		'is_enabled' => 1,
+		'vendor_id' => $member_id,
+	));
+
+}, 50, 2 );
