@@ -1,0 +1,14 @@
+//Make Vendor Policy Mandatory
+
+add_filter( 'wcfm_is_allow_pm_add_products', function( $is_allow ) {
+	global $wp;if( wcfm_is_vendor() ) {
+		$vendor_id = apply_filters( 'wcfm_current_vendor_id', get_current_user_id() );
+		$wcfm_policy_vendor_options = (array) wcfm_get_user_meta( $vendor_id, 'wcfm_policy_vendor_options', true );
+		$_wcfm_vendor_shipping_policy = !empty( $wcfm_policy_vendor_options['shipping_policy'] ) ? $wcfm_policy_vendor_options['shipping_policy'] : ”;
+		$_wcfm_vendor_refund_policy = !empty( $wcfm_policy_vendor_options['refund_policy'] ) ? $wcfm_policy_vendor_options['refund_policy'] : ”;
+		$_wcfm_vendor_cancellation_policy = !empty( $wcfm_policy_vendor_options['cancellation_policy'] ) ? $wcfm_policy_vendor_options['cancellation_policy'] : ”;
+		if( !$_wcfm_vendor_shipping_policy || !$_wcfm_vendor_refund_policy || !$_wcfm_vendor_cancellation_policy ) {if( isset( $wp->query_vars['wcfm-products-manage'] ) ) {wcfm_restriction_message_show( __( "Store policy not yet setup!", "wc-fronend-manager" ), false, true );
+		}$is_allow = false;
+}
+}return $is_allow;
+}, 750 );
