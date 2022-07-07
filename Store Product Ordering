@@ -1,0 +1,16 @@
+//Overwrite WooCommerce product order when viewing a shop's store front. (In this case, we're allowing the vendor to assign custom order number
+
+function default_catalog_orderby( $sort_by ) {
+global $WCFM, $WCFMmp;
+$wcfm_store_url = wcfm_get_option( 'wcfm_store_url', 'store' );
+$wcfm_store_name = apply_filters( 'wcfmmp_store_query_var', get_query_var( $wcfm_store_url ) );
+$vendor_id_shop = get_user_by( 'slug', $wcfm_store_name );
+if( $vendor_id_shop ) {
+return 'menu_order';
+}
+else
+{
+return 'popularity';
+}
+}
+add_filter('woocommerce_default_catalog_orderby', 'default_catalog_orderby');
