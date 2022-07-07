@@ -1,0 +1,37 @@
+// Snippet from https://gist.github.com/mitchellkrogza
+//
+// Notify user of product deletion
+// Applies to any Woocommerce product but was written specifically for WCFM Marketplace
+// Copyright Bjorn Patje & Mitchell Krog (thank you Bjorn)
+// ======================================================================================
+// This sends an email to the owner (user) of a product when it is deleted / trashed
+// The email uses simple html formatting and php variables
+// Modify the contents of the $body varaible and $subject variable to your liking
+// ======================================================================================
+
+add_action( 'delete_post', 'notification_for_product', 99 );
+add_action('publish_to_trash', 'notification_for_product', 99);
+add_action('draft_to_trash',   'notification_for_product', 99);
+add_action('pending_to_trash', 'notification_for_product', 99);
+
+function notification_for_product( $post_id ){
+    if( get_post_type( $post_id ) != 'product' ) return;
+
+	// Get the product author email address
+	$author_id = get_post_field( 'post_author', $post_id );
+	$to    = get_the_author_meta( 'user_email', $author_id );
+
+	// Get the author name
+	$author_name    = get_the_author_meta( 'first_name', $author_id );
+	
+	// Get the post title
+	$title = get_post_field( 'post_title', $POST_ID );
+
+	// Construct our email
+	$subject = "Product Not Approved";
+	$body = "Hi " .$author_name. " we regret to inform you that your product <strong>" .$title. "</strong> has not met the requirements to be considered for approval.<br><br>Kind Regards<br>The Team<br>-------------------------------<br>Our Store Name";
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+	
+	// Send our email
+    wp_mail( $to, $subject, $body, $headers );
+}
