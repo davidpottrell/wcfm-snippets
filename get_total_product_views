@@ -1,0 +1,85 @@
+This is a WIP. It works, but it's slow and could be improved greatly.
+
+
+function get_vendor_views($range) {
+    // Get the current user ID
+    $user_id = apply_filters('wcfm_current_vendor_id', get_current_user_id());
+
+    // Check if the cached value exists
+    $cached_value = get_transient('vendor_views_' . $user_id);
+
+    if (false === $cached_value) {
+        // If the cached value doesn't exist, retrieve it from the database
+        $results = calculate_vendor_views($range, $user_id);
+
+        // Cache the results for one day
+        set_transient('vendor_views_' . $user_id, $results, DAY_IN_SECONDS);
+
+        // Return the fresh results
+        return $results;
+    }
+
+    // Return the cached value
+    return $cached_value;
+}
+
+
+// Function to calculate vendor views from the database
+function calculate_vendor_views($range, $user_id) {
+    global $wpdb;
+
+    $range = !empty($range) ? sanitize_text_field($range) : '-30 DAY';
+
+    $today = strtotime(date('Y-m-d', current_time('timestamp')));
+    $start_date = date('Y-m-d', strtotime($range, $today));
+
+    $sql = $wpdb->prepare(
+        "SELECT COUNT(1) AS views 
+        FROM {$wpdb->prefix}wcfm_detailed_analysis
+        WHERE DATE(visited) BETWEEN %s AND NOW()
+        AND author_id = %d
+        AND country = 'GB'",
+        $start_date,
+        $user_id
+    );
+
+    $results = $wpdb->get_var($sql);
+
+    return (int) $results;
+}
+
+
+// Schedule an event to refresh the cache once a day
+function schedule_vendor_views_refresh($user_id) {
+    if (!wp_next_scheduled('refresh_vendor_views_cache_' . $user_id)) {
+        wp_schedule_event(current_time('timestamp'), 'daily', 'refresh_vendor_views_cache', array($user_id));
+    }
+}
+add_action('wp', function() {
+    // Get the current user ID
+    $user_id = apply_filters('wcfm_current_vendor_id', get_current_user_id());
+
+    // Schedule the cache refresh for the current user
+    schedule_vendor_views_refresh($user_id);
+});
+
+
+// Refresh the cache by recalculating the vendor views
+function refresh_vendor_views_cache($user_id) {
+    // Delete the cached value
+    delete_transient('vendor_views_' . $user_id);
+
+    // Calculate and cache the fresh results
+    $range = '-30 DAY'; // Example range, you can adjust it as needed
+    get_vendor_views($range);
+}
+add_action('refresh_vendor_views_cache', 'refresh_vendor_views_cache', 10, 1);
+
+
+//Daily clean up of statistics from anywhere other than GB
+function schedule_daily_query_execution() {
+    if (!wp_next_scheduled('wcfm_gb_cleanup')) {
+        wp_schedule_event(current_time('timestamp'), 'daily', 'wcfm_gb_cleanup');
+    }
+}
+add_action('wp', 'schedule_daily_query_execution');
