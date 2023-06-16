@@ -1,0 +1,23 @@
+//This function creates a daily cron job and removes all analytical entries from the database that are NOT from GB (Great Britain).
+//We use this on www.crafters.market because we only sell to UK, so any stats outside of UK are not needed
+//On initial run, this cleaned up a substantial amount of space from the database
+
+//Daily clean up of statistics from anywhere other than GB
+function schedule_daily_query_execution() {
+    if (!wp_next_scheduled('wcfm_gb_cleanup')) {
+        wp_schedule_event(current_time('timestamp'), 'daily', 'wcfm_gb_cleanup');
+    }
+}
+add_action('wp', 'schedule_daily_query_execution');
+
+// Define the function to run the SQL query
+function wcfm_gb_cleanup() {
+    global $wpdb;
+
+    // SQL query
+    $query = "DELETE FROM {$wpdb->prefix}wcfm_detailed_analysis WHERE country != 'GB'";
+
+    // Execute the query
+    $wpdb->query($query);
+}
+add_action('wcfm_gb_cleanup', 'wcfm_gb_cleanup');
