@@ -1,0 +1,3 @@
+//Automatically change the status from Processing > Completed when the vendor provides shipping information on an order
+
+add_filter( 'wcfm_is_allow_change_main_order_status_on_all_item_shipped', '__return_true' );
